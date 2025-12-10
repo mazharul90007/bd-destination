@@ -11,8 +11,10 @@ model User {
   id                 String     @id @default(uuid())
   name               String
   email              String     @unique
+  profilePhoto       String?
   password           String
   needPasswordChange Boolean    @default(true)
+  otp                Int?
   needRoleChange     Boolean    @default(true)
   phone              String?
   address            String?
@@ -22,6 +24,7 @@ model User {
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
   posts              Post[]
+  reviews            Review[]
 
   @@map("users")
 }
@@ -38,11 +41,26 @@ model Post {
   district    String
   postOffice  String
   postCode    String
-  status      PostStatus @default(ACTIVE)
+  status      PostStatus @default(ONREVIEW)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+  reviews     Review[]
 
   @@map("posts")
+}
+
+model Review {
+  id        String     @id @default(uuid())
+  postId    String
+  post      Post       @relation(fields: [postId], references: [id])
+  userId    String
+  user      User       @relation(fields: [userId], references: [id])
+  review    String
+  status    PostStatus @default(ONREVIEW)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@map("reviews")
 }
 
 enum UserRole {
@@ -61,4 +79,6 @@ enum UserStatus {
 enum PostStatus {
   ACTIVE
   INACTIVE
+  ONREVIEW
+  REJECTED
 }

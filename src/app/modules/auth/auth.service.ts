@@ -71,6 +71,7 @@ const loginUser = async (payload: ILogin) => {
 
   const accessToken = jwtHelpers.generateToken(
     {
+      id: userData.id,
       email: userData.email,
       role: userData.role,
     },
@@ -80,6 +81,7 @@ const loginUser = async (payload: ILogin) => {
 
   const refreshToken = jwtHelpers.generateToken(
     {
+      id: userData.id,
       email: userData.email,
       role: userData.role,
     },
@@ -102,7 +104,7 @@ const refreshToken = async (token: string) => {
       config.jwt.refresh_token_secret
     );
 
-    // console.log(decodedData);
+    console.log(decodedData);
   } catch (error) {
     throw new Error("Your are not authorized");
   }
@@ -116,6 +118,7 @@ const refreshToken = async (token: string) => {
 
   const accessToken = jwtHelpers.generateToken(
     {
+      id: userData.id,
       email: userData.email,
       role: userData.role,
     },
