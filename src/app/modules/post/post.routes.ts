@@ -30,4 +30,15 @@ router.get("/active", postController.getAllActivePosts);
 //====================Get Post by Id====================
 router.get("/:id", postController.getPostById);
 
+//===================Update Post====================
+router.patch(
+  "/:id",
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.MODERATOR),
+  fileUploadrer.upload.single("file"),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = postValidation.updatePost.parse(JSON.parse(req.body.data));
+    return postController.updatePost(req, res, next);
+  }
+);
+
 export const postRouts = router;

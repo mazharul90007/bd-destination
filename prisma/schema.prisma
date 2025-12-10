@@ -30,21 +30,22 @@ model User {
 }
 
 model Post {
-  id          String     @id @default(uuid())
-  authorId    String
-  author      User       @relation(fields: [authorId], references: [id])
-  title       String
-  photoUrl    String?
-  videoUrl    String?
-  description Json?
-  division    String
-  district    String
-  postOffice  String
-  postCode    String
-  status      PostStatus @default(ONREVIEW)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  reviews     Review[]
+  id               String     @id @default(uuid())
+  authorId         String
+  author           User       @relation(fields: [authorId], references: [id])
+  title            String
+  photoUrl         String?
+  photoUrlPublicId String?
+  videoUrl         String?
+  description      Json?
+  division         String
+  district         String
+  postOffice       String
+  postCode         String
+  status           PostStatus @default(ONREVIEW)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  reviews          Review[]
 
   @@map("posts")
 }

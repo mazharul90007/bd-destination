@@ -22,6 +22,7 @@ const createPost = async (payload: Ipost, user: IAuthUser, file?: Ifile) => {
   if (file) {
     const uploadToCloudinary = await fileUploadrer.uploadToCloudinary(file);
     payload.photoUrl = uploadToCloudinary?.secure_url;
+    payload.photoUrlPublicId = uploadToCloudinary?.public_id;
   }
 
   const result = await prisma.post.create({
@@ -173,9 +174,81 @@ const getPostById = async (id: string) => {
   return result;
 };
 
+//===================Update Post====================
+const updatePost = async (
+  id: string,
+  user: IAuthUser,
+  payload: any,
+  file: Ifile
+) => {
+  if (!user) {
+    throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  }
+
+  //get the post.
+  const existingPost = await prisma.post.findUniqueOrThrow({
+    where: { id },
+    select: { authorId: true, photoUrl: true, photoUrlPublicId: true },
+  });
+
+  //check if user is Moderator
+  if (user.role === UserRole.MODERATOR) {
+    if (existingPost.authorId !== user.id) {
+      throw new ApiError(
+        status.FORBIDDEN,
+        "You can only update your own posts"
+      );
+    }
+  }
+
+  //Upload new Photo
+  if (file) {
+    //upload new photo to cloudinary
+    const uploadToCloudinary = await fileUploadrer.uploadToCloudinary(file);
+    payload.photoUrl = uploadToCloudinary?.secure_url;
+    payload.photoUrlPublicId = uploadToCloudinary?.public_id;
+
+    //delete old photo from cloudinary
+    if (existingPost.photoUrlPublicId) {
+      try {
+        await fileUploadrer.deleteFromCloudinary(existingPost.photoUrlPublicId);
+      } catch (error) {
+        console.error("Failed to delete old photos: ", error);
+      }
+    }
+  }
+
+  //remove undefined values
+  Object.keys(payload).forEach((key) => {
+    if (payload[key] === undefined) delete payload[key];
+  });
+
+  //update data
+  const result = await prisma.post.update({
+    where: { id },
+    data: {
+      ...payload,
+      description: payload.description as any,
+    },
+    include: {
+      author: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+        },
+      },
+    },
+  });
+
+  return result;
+};
+
 export const postService = {
   createPost,
   getAllPosts,
   getAllActivePosts,
   getPostById,
+  updatePost,
 };

@@ -5,6 +5,7 @@ export interface IPostDescriptionItem {
 export interface Ipost {
   title: string;
   photoUrl?: string;
+  photoUrlPublicId: string;
   videoUrl?: string;
   description?: IPostDescriptionItem[];
   division: string;

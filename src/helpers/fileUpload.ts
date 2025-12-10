@@ -48,7 +48,28 @@ const uploadToCloudinary = async (
   });
 };
 
+//==============Delete from Cloudinary=================
+const deleteFromCloudinary = async (public_id: string): Promise<void> => {
+  // Configuration
+  cloudinary.config({
+    cloud_name: "dp6urj3gj",
+    api_key: config.cloudinary.cloudinary_api,
+    api_secret: config.cloudinary.cloudinary_secret,
+  });
+
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.destroy(public_id, (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+};
+
 export const fileUploadrer = {
   upload,
   uploadToCloudinary,
+  deleteFromCloudinary,
 };

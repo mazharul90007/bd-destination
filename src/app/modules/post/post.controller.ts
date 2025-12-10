@@ -67,9 +67,26 @@ const getPostById = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+//===================Update Post====================
+const updatePost = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id as string;
+  const user = req.user as IAuthUser;
+  const payload = req.body;
+  const file = req.file as Ifile;
+  const result = await postService.updatePost(id, user, payload, file);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Post has been updated successfully",
+    data: result,
+  });
+});
+
 export const postController = {
   createPost,
   getAllPosts,
   getAllActivePosts,
   getPostById,
+  updatePost,
 };
