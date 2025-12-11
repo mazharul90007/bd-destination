@@ -76,6 +76,23 @@ const getAllPosts = async (
           role: true,
         },
       },
+      reviews: {
+        where: { status: PostStatus.ACTIVE },
+        select: {
+          id: true,
+          userId: true,
+          review: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+          user: {
+            select: {
+              name: true,
+              profilePhoto: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -135,6 +152,23 @@ const getAllActivePosts = async (
           role: true,
         },
       },
+      reviews: {
+        where: { status: PostStatus.ACTIVE },
+        select: {
+          id: true,
+          userId: true,
+          review: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+          user: {
+            select: {
+              name: true,
+              profilePhoto: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -166,6 +200,23 @@ const getPostById = async (id: string) => {
           profilePhoto: true,
           email: true,
           role: true,
+        },
+      },
+      reviews: {
+        where: { status: PostStatus.ACTIVE },
+        select: {
+          id: true,
+          userId: true,
+          review: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+          user: {
+            select: {
+              name: true,
+              profilePhoto: true,
+            },
+          },
         },
       },
     },
