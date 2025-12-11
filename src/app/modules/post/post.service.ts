@@ -245,10 +245,20 @@ const updatePost = async (
   return result;
 };
 
+//===================Delete Post====================
+const deletePost = async (id: string) => {
+  const result = await prisma.post.delete({
+    where: { id },
+  });
+
+  return result;
+};
+
 export const postService = {
   createPost,
   getAllPosts,
   getAllActivePosts,
   getPostById,
   updatePost,
+  deletePost,
 };

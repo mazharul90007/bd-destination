@@ -41,4 +41,11 @@ router.patch(
   }
 );
 
+//===================Delete Post====================
+router.delete(
+  "/:id",
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+  postController.deletePost
+);
+
 export const postRouts = router;
