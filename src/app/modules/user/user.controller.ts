@@ -7,6 +7,7 @@ import { userFilterAbleFields } from "./user.constants";
 import pick from "../../../shared/pick";
 import { IAuthUser } from "../../interfaces/common";
 import { Ifile } from "../../interfaces/file";
+import { IUserStatus } from "./user.interface";
 
 //===================Get All Users===================
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
@@ -53,8 +54,24 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+//===================Update User Status===================
+const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id as string;
+  const user = req.user as IAuthUser;
+  const payload = req.body as IUserStatus;
+  const result = await userService.updateUserStatus(id, user, payload);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "User data deleted successfully",
+    data: result,
+  });
+});
+
 export const userController = {
   getAllUsers,
   getUserProfile,
   updateUser,
+  updateUserStatus,
 };

@@ -1,12 +1,16 @@
 import status from "http-status";
-import { Prisma, UserRole } from "../../../../generated/prisma/client";
+import {
+  Prisma,
+  UserRole,
+  UserStatus,
+} from "../../../../generated/prisma/client";
 import calculatePagination from "../../../helpers/paginationHelpers";
 import { prisma } from "../../../lib/prisma";
 import ApiError from "../../errors/ApiErrors";
 import { IAuthUser } from "../../interfaces/common";
 import { IPaginationOptions } from "../../interfaces/pagination";
 import { userSearchAbleFields } from "./user.constants";
-import { IUserFilterRequest } from "./user.interface";
+import { IUserFilterRequest, IUserStatus } from "./user.interface";
 import { Ifile } from "../../interfaces/file";
 import { fileUploadrer } from "../../../helpers/fileUpload";
 
@@ -128,7 +132,7 @@ const updateUser = async (
     if (existingUser.id !== user.id) {
       throw new ApiError(
         status.FORBIDDEN,
-        "You can only update your own posts"
+        "You can only update your own profile"
       );
     }
   }
@@ -176,8 +180,50 @@ const updateUser = async (
   return result;
 };
 
+//===================Update Status===================
+const updateUserStatus = async (
+  id: string,
+  user: IAuthUser,
+  payload: IUserStatus
+) => {
+  if (!user) {
+    throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
+  }
+
+  //get the user.
+  const existingUser = await prisma.user.findUniqueOrThrow({
+    where: { id },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+    },
+  });
+
+  //check if user is Moderator
+  if (user.role === UserRole.MODERATOR) {
+    if (existingUser.id !== user.id) {
+      throw new ApiError(
+        status.FORBIDDEN,
+        "You can only delete your own profile"
+      );
+    }
+  }
+
+  //Update User status
+  const result = await prisma.user.update({
+    where: {
+      id,
+    },
+    data: {
+      status: payload.status,
+    },
+  });
+};
+
 export const userService = {
   getAllUsers,
   getUserProfile,
   updateUser,
+  updateUserStatus,
 };

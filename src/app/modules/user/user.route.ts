@@ -31,4 +31,11 @@ router.patch(
   }
 );
 
+//===================Update User Status===================
+router.patch(
+  "/status/:id",
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.MODERATOR),
+  userController.updateUserStatus
+);
+
 export const userRoutes = router;

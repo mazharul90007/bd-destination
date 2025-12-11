@@ -20,7 +20,6 @@ model User {
   phone                   String?
   address                 String?
   role                    UserRole   @default(USER)
-  isDeleted               Boolean    @default(false)
   status                  UserStatus @default(ACTIVE)
   createdAt               DateTime   @default(now())
   updatedAt               DateTime   @updatedAt
