@@ -26,4 +26,11 @@ router.patch(
   reviewController.updateReview
 );
 
+//===================Change Review Status====================
+router.patch(
+  "/change-status",
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+  reviewController.changeReviewStatus
+);
+
 export const reviewRoutes = router;

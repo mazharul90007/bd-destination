@@ -2,7 +2,11 @@ import status from "http-status";
 import { prisma } from "../../../lib/prisma";
 import ApiError from "../../errors/ApiErrors";
 import { IAuthUser } from "../../interfaces/common";
-import { ICreateReview, IUpdateReviewStatus } from "./review.interface";
+import {
+  ICreateReview,
+  IReviwStatus,
+  IUpdateReviewStatus,
+} from "./review.interface";
 import { UserRole } from "../../../../generated/prisma/enums";
 
 //===================Create Review====================
@@ -105,9 +109,25 @@ const updateReview = async (user: IAuthUser, payload: IUpdateReviewStatus) => {
 };
 
 //===================Change Review Status====================
+const changeReviewStatus = async (payload: IReviwStatus) => {
+  const { id, status } = payload;
+
+  //find the review
+  const reviewData = await prisma.review.findUniqueOrThrow({
+    where: { id },
+  });
+
+  const result = await prisma.review.update({
+    where: { id },
+    data: { status },
+  });
+
+  return result;
+};
 
 export const reviewService = {
   createReview,
   deleteReview,
   updateReview,
+  changeReviewStatus,
 };

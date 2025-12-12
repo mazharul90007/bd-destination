@@ -3,7 +3,11 @@ import sendResponse from "../../../shared/sendResponse";
 import { Request, Response } from "express";
 import { reviewService } from "./review.service";
 import { IAuthUser } from "../../interfaces/common";
-import { ICreateReview, IUpdateReviewStatus } from "./review.interface";
+import {
+  ICreateReview,
+  IReviwStatus,
+  IUpdateReviewStatus,
+} from "./review.interface";
 import catchAsync from "../../../shared/catchAsync";
 
 //===================Create Review====================
@@ -48,8 +52,23 @@ const updateReview = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+//===================Change Review Status====================
+const changeReviewStatus = catchAsync(async (req: Request, res: Response) => {
+  // const user = req.user as IAuthUser;
+  const payload = req.body as IReviwStatus;
+  const result = await reviewService.changeReviewStatus(payload);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Review has been updated successfully",
+    data: result,
+  });
+});
+
 export const reviewController = {
   createReview,
   deleteReview,
   updateReview,
+  changeReviewStatus,
 };
