@@ -298,8 +298,36 @@ const updatePost = async (
 
 //===================Delete Post====================
 const deletePost = async (id: string) => {
-  const result = await prisma.post.delete({
+  //find post
+  const postData = await prisma.post.findUniqueOrThrow({
     where: { id },
+    include: {
+      reviews: true,
+    },
+  });
+
+  //delete post photo from cloudinary first
+  if (postData.photoUrlPublicId) {
+    try {
+      await fileUploadrer.deleteFromCloudinary(postData.photoUrlPublicId);
+    } catch (error) {
+      console.error("Photo deletion failed", error);
+    }
+  }
+
+  const result = await prisma.$transaction(async (tx) => {
+    //at frist delete post related all reveiews
+    await tx.review.deleteMany({
+      where: {
+        postId: id,
+      },
+    });
+
+    //delete post
+    const deletePost = await tx.post.delete({
+      where: { id },
+    });
+    return deletePost;
   });
 
   return result;
