@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import status from "http-status";
 import router from "./app/routes";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
+import { seedSuperAdmin } from "./lib/seed";
 
 const app: Application = express();
 
@@ -21,6 +22,8 @@ app.get("/", (req: Request, res: Response) => {
 
 // Global error handler
 app.use(globalErrorHandler);
+
+seedSuperAdmin();
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.status(status.NOT_FOUND).json({
