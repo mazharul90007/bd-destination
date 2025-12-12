@@ -1,50 +1,75 @@
 import multer from "multer";
 import path from "path";
-import { v2 as cloudinary } from "cloudinary";
+import {
+  v2 as cloudinary,
+  UploadApiErrorResponse,
+  UploadApiResponse,
+} from "cloudinary";
 import fs from "fs";
 import type { ICloudinaryResponse, Ifile } from "../app/interfaces/file.js";
 import config from "../app/config/index.js";
 
 //==============Uploade to Multer====================
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(process.cwd(), "uploads"));
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  },
-});
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, path.join(process.cwd(), "uploads"));
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, file.originalname);
+//   },
+// });
 
-const upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
+
+const storage = multer.memoryStorage(); // store in memory
+const upload = multer({ storage });
 
 //==============Upload to Cloudinary=================
 
-const uploadToCloudinary = async (
-  file: Ifile
-): Promise<ICloudinaryResponse> => {
-  // console.log(file);
-  // Configuration
+// const uploadToCloudinary = async (
+//   file: Ifile
+// ): Promise<ICloudinaryResponse> => {
+//   // console.log(file);
+//   // Configuration
+//   cloudinary.config({
+//     cloud_name: "dp6urj3gj",
+//     api_key: config.cloudinary.cloudinary_api,
+//     api_secret: config.cloudinary.cloudinary_secret,
+//   });
+
+//   // console.log("File: ", { file });
+//   return new Promise((resolve, reject) => {
+//     // Upload an image
+//     cloudinary.uploader.upload(
+//       file.path,
+//       (error: Error, result: ICloudinaryResponse) => {
+//         fs.unlinkSync(file.path);
+//         if (error) {
+//           reject(error);
+//         } else {
+//           resolve(result);
+//         }
+//       }
+//     );
+//   });
+// };
+
+const uploadToCloudinary = async (file: Ifile): Promise<UploadApiResponse> => {
   cloudinary.config({
     cloud_name: "dp6urj3gj",
     api_key: config.cloudinary.cloudinary_api,
     api_secret: config.cloudinary.cloudinary_secret,
   });
 
-  // console.log("File: ", { file });
   return new Promise((resolve, reject) => {
-    // Upload an image
-    cloudinary.uploader.upload(
-      file.path,
-      (error: Error, result: ICloudinaryResponse) => {
-        fs.unlinkSync(file.path);
-        if (error) {
-          reject(error);
-        } else {
-          resolve(result);
-        }
-      }
-    );
+    cloudinary.uploader
+      .upload_stream({ folder: "posts" }, (error, result) => {
+        if (error) return reject(error);
+        if (!result) return reject(new Error("Cloudinary upload failed"));
+        resolve(result); // result is already UploadApiResponse
+      })
+      .end(file.buffer);
   });
 };
 

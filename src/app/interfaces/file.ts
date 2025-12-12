@@ -28,8 +28,9 @@ export type Ifile = {
   originalname: string;
   encoding: string;
   mimetype: string;
-  destination: string;
-  filename: string;
-  path: string;
+  // destination: string;  ----> These are for disk storage
+  // filename: string;
+  // path: string;
   size: number;
+  buffer: Buffer; //for updated method
 };
