@@ -12,4 +12,11 @@ router.post(
   reviewController.createReview
 );
 
+//===================Delete Review====================
+router.delete(
+  "/delete-review",
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.MODERATOR, UserRole.USER),
+  reviewController.deleteReview
+);
+
 export const reviewRoutes = router;

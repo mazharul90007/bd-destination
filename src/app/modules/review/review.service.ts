@@ -3,6 +3,7 @@ import { prisma } from "../../../lib/prisma";
 import ApiError from "../../errors/ApiErrors";
 import { IAuthUser } from "../../interfaces/common";
 import { ICreateReview } from "./review.interface";
+import { UserRole } from "../../../../generated/prisma/enums";
 
 //===================Create Review====================
 const createReview = async (user: IAuthUser, payload: ICreateReview) => {
@@ -44,6 +45,34 @@ const createReview = async (user: IAuthUser, payload: ICreateReview) => {
   return result;
 };
 
+//===================Delete Review====================
+const deleteReview = async (id: string, user: IAuthUser) => {
+  //user validation
+  if (!user) {
+    throw new ApiError(status.UNAUTHORIZED, "UnAuthorized");
+  }
+  //find the review
+  const reviewData = await prisma.review.findUniqueOrThrow({
+    where: { id },
+  });
+
+  //user and moderator will can delete only their own review
+  if (
+    (user.role === UserRole.USER || user.role === UserRole.MODERATOR) &&
+    reviewData.userId !== user.id
+  ) {
+    throw new ApiError(status.FORBIDDEN, "You can only delete your own review");
+  }
+
+  //admin and super admin can delete any review
+  const result = await prisma.review.delete({
+    where: { id },
+  });
+
+  return result;
+};
+
 export const reviewService = {
   createReview,
+  deleteReview,
 };
