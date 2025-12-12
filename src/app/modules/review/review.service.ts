@@ -2,7 +2,7 @@ import status from "http-status";
 import { prisma } from "../../../lib/prisma";
 import ApiError from "../../errors/ApiErrors";
 import { IAuthUser } from "../../interfaces/common";
-import { ICreateReview } from "./review.interface";
+import { ICreateReview, IUpdateReviewStatus } from "./review.interface";
 import { UserRole } from "../../../../generated/prisma/enums";
 
 //===================Create Review====================
@@ -72,7 +72,42 @@ const deleteReview = async (id: string, user: IAuthUser) => {
   return result;
 };
 
+//===================Update Review====================
+const updateReview = async (user: IAuthUser, payload: IUpdateReviewStatus) => {
+  const { id, review } = payload;
+
+  //user validation
+  if (!user) {
+    throw new ApiError(status.UNAUTHORIZED, "UnAuthorized");
+  }
+  //find the review
+  const reviewData = await prisma.review.findUniqueOrThrow({
+    where: { id },
+  });
+
+  //user and moderator will can update only their own review
+  if (
+    (user.role === UserRole.USER || user.role === UserRole.MODERATOR) &&
+    reviewData.userId !== user.id
+  ) {
+    throw new ApiError(status.FORBIDDEN, "You can only update your own review");
+  }
+
+  //admin and super admin can update any review
+  const result = await prisma.review.update({
+    where: { id },
+    data: {
+      review,
+    },
+  });
+
+  return result;
+};
+
+//===================Change Review Status====================
+
 export const reviewService = {
   createReview,
   deleteReview,
+  updateReview,
 };

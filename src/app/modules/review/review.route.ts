@@ -19,4 +19,11 @@ router.delete(
   reviewController.deleteReview
 );
 
+//===================Update Review====================
+router.patch(
+  "/update-review",
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.MODERATOR, UserRole.USER),
+  reviewController.updateReview
+);
+
 export const reviewRoutes = router;
