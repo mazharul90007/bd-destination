@@ -112,7 +112,7 @@ Before you begin, ensure you have the following installed:
 
 ```bash
 git clone <repository-url>
-cd bd-wheel-server
+cd bd-destination
 ```
 
 ### 2. Install Dependencies
@@ -136,16 +136,25 @@ Create a `.env` file in the root directory with the following variables:
 ```env
 PORT=5173
 CONNECTION_STR=postgresql://username:password@localhost:5432/database_name
-JWT_SECRET=your_jwt_secret_key_here
+CLOUDINARY_API="23************"
+CLOUDINARY_SECRET="RDJ***************hs"
+
+JWT_SECRET='dsgsfljksljlsjljsltyoshe'
 EXPIRES_IN=2592000
+REFRESH_TOKEN_SECRET='sdgslsgsdhdeeejlsjlsjlssl'
+REFRESH_TOKEN_SECRET_EXPIRES_IN=2592000
 ```
 
 **Required Environment Variables:**
 
 - `PORT` - Server port number (default: 3000)
 - `CONNECTION_STR` - PostgreSQL database connection string
+- `CLOUDINARY_API` - A public identifier for your Cloudinary account
+- `CLOUDINARY_SECRET` - A private secret key
 - `JWT_SECRET` - Secret key for JWT token signing
 - `EXPIRES_IN` - give a miliseconds value for JWT expire time (default: 2592000)
+- `REFRESH_TOKEN_SECRET` - give a miliseconds value for JWT expire time (default: 2592000)
+- `REFRESH_TOKEN_SECRET_EXPIRES_IN` - give a miliseconds value for JWT expire time (default: 2592000)
 
 ### 4. Database Setup
 
@@ -153,9 +162,9 @@ The application automatically initializes the database tables on startup. Ensure
 
 **Database Tables:**
 
-- `users` - User accounts with roles (admin, customer)
-- `vehicles` - Vehicle inventory
-- `bookings` - Booking records
+- `users` - User accounts with roles (admin, moderator and user)
+- `posts` - Blog Posts
+- `reviews` - Post Reviews
 
 ### 5. Build the Project
 
@@ -177,7 +186,7 @@ Run the server in development mode with hot-reload:
 npm run dev
 ```
 
-The server will start on `http://localhost:5000` (or your configured PORT).
+The server will start on `http://localhost:5173` (or your configured PORT).
 
 ### Production Mode
 
@@ -195,8 +204,8 @@ node dist/server.js
 
 ### API Base URL
 
-- **Development:** `http://localhost:3000/api/v1`
-- **Production:** `https://bd-wheel-server.vercel.app/api/v1`
+- **Development:** `http://localhost:5173/api/v1`
+- **Production:** `https://bd-destination.vercel.app/api/v1`
 
 ### API Endpoints
 
