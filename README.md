@@ -1,6 +1,6 @@
 # BD-DESTINATION Server
 
-**BD-DESTINATION** - Your complete guide to beautiful places, history, and travel in Bangladesh.
+**BD-DESTINATION** - BD-DESTINATION is a full-featured backend API for a tourism-based blogging platform that provides detailed information about beautiful and tourist places in Bangladesh. The platform supports role-based content management, secure authentication, post moderation, and review workflows using modern backend technologies.
 
 🌐 **Live URL:** [https://bd-destination.vercel.app](https://bd-destination.vercel.app)  
 📚 **API Documentation:** [Postman Documentation](https://documenter.getpostman.com/view/40157327/2sB3dSRpQL)
@@ -45,7 +45,7 @@
   - Admin: Can update any reviews.
   - Moderator & User: Can update only their own reviews
 - Change Review Status (Admin Only):
-  - Admin can Accept or reject or delete the review. if admin accept the the review will be active and published
+  - Admin can Accept or reject or delete the review. If the admin accepts the review, it becomes active and publicly visible.
 
 ### User Management
 
@@ -58,6 +58,14 @@
 - Update User data (Admin, Moderator, User):
   - Admin: Update any Users data
   - Moderator & User: Moderator and Users can update their own Profile
+
+---
+
+## 🗂️ Entity Relationship Diagram (ERD)
+
+<p align="center">
+  <img src="https://res.cloudinary.com/dp6urj3gj/image/upload/v1765627636/bd-destinationERD_pftztz.png" alt="BD-Destination ER Diagram" width="700"/>
+</p>
 
 ---
 
