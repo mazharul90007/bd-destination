@@ -212,34 +212,38 @@ node dist/server.js
 #### Authentication
 
 - `POST /api/v1/auth/signup` - User registration
-- `POST /api/v1/auth/signin` - User login
+- `POST /api/v1/auth/login` - User login
+- `GET /api/v1/auth/refresh-token` - Get access-token from refresh token
 
 #### Users
 
-- `GET /api/v1/users` - Get user profile (Protected)
-- `PATCH /api/v1/users/:id` - Update user (Protected)
-- `DELETE /api/v1/users/:id` - delete user (protected)
+- `GET /api/v1/user` - Get All user profile (Protected)
+- `GET /api/v1/user/:id` - Get user own profile (Protected)
+- `PATCH /api/v1/user/:id` - Update user (Protected)
+- `PATCH /api/v1/user/status/:id` - Update user status (Protected)
 
-#### Vehicles
+#### Post
 
-- `POST /api/v1/vehicles` - Create vehicle (Admin only)
-- `GET /api/v1/vehicles` - Get all vehicles
-- `GET /api/v1/vehicles/:id` - Get vehicle by ID
-- `PATCH /api/v1/vehicles/:id` - Update vehicle (Admin only)
-- `DELETE /api/v1/vehicles/:id` - Delete vehicle (Admin only)
+- `POST /api/v1/post` - Create Post (Admin & Moderator)
+- `GET /api/v1/post/active` - Get all active posts
+- `GET /api/v1/post` - Get all posts (Admin only)
+- `GET /api/v1/post/:id` - Get Post by ID
+- `PATCH /api/v1/post/:id` - Update vehicle (Admin & Moderator)
+- `DELETE /api/v1/post/:id` - Delete Post (Admin only)
 
-#### Bookings
+#### Review
 
-- `POST /api/v1/bookings` - Create booking (Admin & Customer)
-- `GET /api/v1/bookings` - Get bookings (Admin: all, Customer: own)
-- `PATCH /api/v1/bookings/:id` - Update bookings status
+- `POST /api/v1/review` - Create Review (Admin, Moderator & User)
+- `PATCH /api/v1/review/update-review` - Update Review (Admin, Moderator & User)
+- `PATCH /api/v1/review/change-status` - Change Review Status(Admin only)
+- `DELETE /api/v1/review/delete-review` - Delete Review(Admin only)
 
 ### Authentication
 
 Most endpoints require authentication. Include the JWT token in the request header:
 
 ```
-Authorization: Bearer <your_jwt_token>
+Authorization: <your_jwt_token>
 ```
 
 ---
@@ -247,11 +251,7 @@ Authorization: Bearer <your_jwt_token>
 ## 📖 API Documentation
 
 For detailed API documentation, request/response examples, and testing, visit:
-**[Postman Documentation](https://documenter.getpostman.com/view/40157327/2sB3dQuovj)**
-
----
-
-## 🏗 Project Structure
+**[Postman Documentation](https://documenter.getpostman.com/view/40157327/2sB3dSRpQL)**
 
 ---
 
@@ -260,8 +260,7 @@ For detailed API documentation, request/response examples, and testing, visit:
 - Password hashing with bcrypt
 - JWT token-based authentication
 - Role-based access control (RBAC)
-- Input validation and sanitization
-- SQL injection protection via parameterized queries
+- Input validation using zod and sanitization
 
 ---
 
@@ -285,4 +284,4 @@ Contributions, issues, and feature requests are welcome!
 
 ## 📞 Support
 
-For support, please visit the [API Documentation](https://documenter.getpostman.com/view/40157327/2sB3dQuovj) or contact the development team.
+For support, please visit the [API Documentation](https://documenter.getpostman.com/view/40157327/2sB3dSRpQL) or contact the development team.
