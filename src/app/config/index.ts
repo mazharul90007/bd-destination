@@ -20,4 +20,5 @@ export default {
     refresh_token_expires_in: process.env
       .REFRESH_TOKEN_SECRET_EXPIRES_IN as unknown,
   },
+  redis_url: process.env.REDIS_URL as string,
 };

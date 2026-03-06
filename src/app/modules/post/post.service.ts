@@ -13,6 +13,7 @@ import {
   UserRole,
 } from "../../../../generated/prisma/client";
 import { postSearchableFields } from "./post.constants";
+import redisClient from "../../../lib/redis";
 
 //========================Create Post======================
 const createPost = async (payload: Ipost, user: IAuthUser, file?: Ifile) => {
@@ -33,14 +34,39 @@ const createPost = async (payload: Ipost, user: IAuthUser, file?: Ifile) => {
     },
   });
 
+  //Clear Redis cached data
+  try {
+    const keys = await redisClient.keys("posts:*");
+    if (keys.length > 0) {
+      await redisClient.del(keys);
+    }
+  } catch (error) {
+    console.error("Redis Cache Clear Error:", error);
+  }
+
   return result;
 };
 
 //========================Get All Post======================
 const getAllPosts = async (
   filters: IPostFilterRequest,
-  options: IPaginationOptions
+  options: IPaginationOptions,
 ) => {
+  //Create a unique Cache key based on filters and options
+  const cacheKey = `posts:${JSON.stringify(filters)}:${JSON.stringify(options)}`;
+
+  //Redis Get
+  try {
+    //Try to get data from Redis
+    const cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      console.log("Serving Posts from Cache!");
+      return JSON.parse(cachedData);
+    }
+  } catch (error) {
+    console.error("Redis Get Error (Falling back to DB): ", error);
+  }
+
   const { limit, page, skip } = calculatePagination(options);
   const { searchTerm } = filters;
 
@@ -100,7 +126,7 @@ const getAllPosts = async (
     where: whereCondition,
   });
 
-  return {
+  const responseData = {
     meta: {
       total,
       page,
@@ -108,12 +134,22 @@ const getAllPosts = async (
     },
     data: result,
   };
+
+  //Redis SET
+  try {
+    //Save the result to Redis for future requests
+    await redisClient.setEx(cacheKey, 600, JSON.stringify(responseData));
+  } catch (error) {
+    console.error("Redis Set Error:", error);
+  }
+
+  return responseData;
 };
 
 //========================Get All Active Post======================
 const getAllActivePosts = async (
   filters: IPostFilterRequest,
-  options: IPaginationOptions
+  options: IPaginationOptions,
 ) => {
   const { limit, page, skip } = calculatePagination(options);
   const { searchTerm } = filters;
@@ -230,7 +266,7 @@ const updatePost = async (
   id: string,
   user: IAuthUser,
   payload: any,
-  file: Ifile
+  file: Ifile,
 ) => {
   if (!user) {
     throw new ApiError(status.UNAUTHORIZED, "Unauthorized");
@@ -247,7 +283,7 @@ const updatePost = async (
     if (existingPost.authorId !== user.id) {
       throw new ApiError(
         status.FORBIDDEN,
-        "You can only update your own posts"
+        "You can only update your own posts",
       );
     }
   }
@@ -293,6 +329,16 @@ const updatePost = async (
     },
   });
 
+  //Clear Redis cached data
+  try {
+    const keys = await redisClient.keys("posts:*");
+    if (keys.length > 0) {
+      await redisClient.del(keys);
+    }
+  } catch (error) {
+    console.error("Redis Cache Clear Error:", error);
+  }
+
   return result;
 };
 
@@ -329,6 +375,16 @@ const deletePost = async (id: string) => {
     });
     return deletePost;
   });
+
+  //Clear Redis cached data
+  try {
+    const keys = await redisClient.keys("posts:*");
+    if (keys.length > 0) {
+      await redisClient.del(keys);
+    }
+  } catch (error) {
+    console.error("Redis Cache Clear Error:", error);
+  }
 
   return result;
 };
